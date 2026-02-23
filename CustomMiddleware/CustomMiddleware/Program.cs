@@ -1,7 +1,16 @@
+using CustomMiddleware.Extensions;
+using CustomMiddleware.Middlewares;
+using CustomMiddleware.Options;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddApiMonitoring(option => option.SlowRequestTreshold = 500);
+
+
+
 
 var app = builder.Build();
 
@@ -13,10 +22,14 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+
+
 app.UseHttpsRedirection();
 app.UseRouting();
-
 app.UseAuthorization();
+
+app.UseApiMonitoring();
+
 
 app.MapStaticAssets();
 
@@ -24,6 +37,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
 
 
 app.Run();
