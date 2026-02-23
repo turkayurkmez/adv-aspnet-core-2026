@@ -22,6 +22,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+var word = "sample";
 
 
 app.UseHttpsRedirection();

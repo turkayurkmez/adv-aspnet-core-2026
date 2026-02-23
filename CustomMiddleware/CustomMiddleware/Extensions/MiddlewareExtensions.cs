@@ -20,5 +20,10 @@ namespace CustomMiddleware.Extensions
         {
             return builder.UseMiddleware<ApiMonitoringMiddleware>();
         }
+
+        public static string Test(this string value)
+        {
+            return "deneme";
+        }
     }
 }

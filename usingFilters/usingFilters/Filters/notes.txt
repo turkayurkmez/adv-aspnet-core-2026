@@ -1,0 +1,9 @@
+﻿Belirli bir action için httpRequest işlemi uygulamak için Filter'lar kullanılır.
+
+1. Authorization --> ÇOK DİKKAT EDİLMELİ
+2. Action 
+3. Result
+4. Exception
+5. Resource
+
+1 -> 5 -> 2 -> 3 -> 4
