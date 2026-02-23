@@ -33,5 +33,16 @@ namespace usingFilters.Controllers
             var modelInfo = new ModelInfo();
             return Ok(modelInfo);
         }
+
+        [HttpGet("GetCustomer/{id:int}")]
+        [OutOfRange]
+        public IActionResult GetCustomer(int id)
+        {
+            if (id < 0)
+            {
+                throw new ArgumentOutOfRangeException(paramName:"id", message: $"id parametresi, 0'dan küçük olamaz.", actualValue:id);
+            }
+            return Ok(new { message = "Action'da hata olmadý." });
+        }
     }
 }
