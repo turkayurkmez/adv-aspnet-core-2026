@@ -1,0 +1,5 @@
+@baseUrl = https://localhost:7123
+@productId = 18
+
+### Delete Product by ID
+DELETE {{baseUrl}}/api/Products/{{productId}}
