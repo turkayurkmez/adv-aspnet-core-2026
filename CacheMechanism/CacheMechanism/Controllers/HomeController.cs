@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using CacheMechanism.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace CacheMechanism.Controllers
@@ -10,10 +11,14 @@ namespace CacheMechanism.Controllers
         private readonly IMemoryCache _memoryCache;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(IMemoryCache memoryCache, ILogger<HomeController> logger)
+        //Belirli bir durumda (örneðin: ürün güncellendiðinde), belirli etikete sahip tüm cache'lerin temizlenmesini istiyorsak, bu baðýmlýlýðý kullanýyoruz:
+        private readonly IOutputCacheStore _outputCacheStore;
+
+        public HomeController(IMemoryCache memoryCache, ILogger<HomeController> logger, IOutputCacheStore outputCacheStore)
         {
             _memoryCache = memoryCache;
             _logger = logger;
+            _outputCacheStore = outputCacheStore;
         }
 
         public IActionResult Index()
@@ -24,7 +29,7 @@ namespace CacheMechanism.Controllers
              *  Yoksa iþlemi yap sonucu cache'e at
              */
 
-            var option = new MemoryCacheEntryOptions();            
+            var option = new MemoryCacheEntryOptions();
             option.SetAbsoluteExpiration(DateTime.Now.AddMinutes(1));
             //option.SetSlidingExpiration(TimeSpan.FromMinutes(1));
 
@@ -33,7 +38,7 @@ namespace CacheMechanism.Controllers
 
             option.PostEvictionCallbacks.Add(new PostEvictionCallbackRegistration
             {
-                EvictionCallback = (key,value, reason, state) =>
+                EvictionCallback = (key, value, reason, state) =>
                 {
                     _logger.LogInformation($"{key} anahtar deðerindeki cache verisi {reason} sebebiyle cache'den çýktý");
                 }
@@ -63,10 +68,10 @@ namespace CacheMechanism.Controllers
             return View();
         }
 
-        [ResponseCache(Duration =60, Location = ResponseCacheLocation.Client, VaryByQueryKeys = ["id"])]
+        [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Client, VaryByQueryKeys = ["id"])]
         public IActionResult CacheHelper(int? id)
         {
-            var employee = new { Name = "Türkay", Id = id, Department="IT" };
+            var employee = new { Name = "Türkay", Id = id, Department = "IT" };
 
             return Ok(new { data = employee, dateInfo = DateTime.Now });
 
@@ -77,6 +82,22 @@ namespace CacheMechanism.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [OutputCache(PolicyName = "Aggressive", Tags = ["products"])]
+        public IActionResult GetProducts()
+        {
+            var product = new { Name = "Ürün A", Price = 1, ClickTime = DateTime.Now };
+            return Ok(product);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update(CancellationToken ct)
+        {
+            //Güncelleme yaptý...
+            await _outputCacheStore.EvictByTagAsync("products", ct); //etiketi "products" olan output cache'leri kaldýr!
+
+            return Ok();
         }
     }
 }
