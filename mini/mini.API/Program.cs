@@ -1,8 +1,14 @@
+using mini.Application;
+using mini.Application.Contracts;
+using mini.Infrastructure.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 var app = builder.Build();
 
@@ -32,6 +38,12 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 })
 .WithName("GetWeatherForecast");
+
+app.MapGet("/getProducts", async (IProductService productService) =>
+{
+    var products = await productService.GetProductsAsync();
+    return Results.Ok(products);
+});
 
 app.Run();
 

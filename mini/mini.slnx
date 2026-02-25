@@ -2,4 +2,5 @@
   <Project Path="mini.API/mini.API.csproj" />
   <Project Path="mini.Application/mini.Application.csproj" />
   <Project Path="mini.Domain/mini.Domain.csproj" />
+  <Project Path="mini.Infrastructure/mini.Infrastructure.csproj" />
 </Solution>
