@@ -1,5 +1,6 @@
 ﻿using mini.Application.Contracts;
 using mini.Application.DataTransferObjects;
+using mini.Application.Features.Products.Commands.CreateNewProduct;
 using mini.Domain;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace mini.Application
             _productRepository = productRepository;
         }
 
-        public async Task<int> CreateNewProduct(CreateNewProductRequest request)
+        public async Task<int> CreateNewProduct(CreateNewProductRequestDto request)
         {
             var product = new Product
             {

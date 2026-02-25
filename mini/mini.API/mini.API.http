@@ -4,3 +4,19 @@ GET {{mini.API_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+GET {{mini.API_HostAddress}}/getProducts
+Accept: application/json
+
+###
+
+POST {{mini.API_HostAddress}}/createProduct
+Content-Type: application/json
+
+{
+  "name": "Test Product",
+  "description": "This is a test product description",
+  "price": 99.99
+}
+
+###

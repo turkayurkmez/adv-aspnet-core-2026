@@ -1,6 +1,10 @@
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using mini.Application;
 using mini.Application.Contracts;
+using mini.Application.DataTransferObjects;
+using mini.Application.Features.Products.Commands.CreateNewProduct;
+using mini.Application.Features.Products.Queries.GetAllProducts;
 using mini.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +20,8 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 builder.Services.AddDbContext<mini.Infrastructure.Data.SampleProductsDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<GetAllProductsRequestHandler>());
 
 
 var app = builder.Build();
@@ -56,10 +62,26 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast");
 
-app.MapGet("/getProducts", async (IProductService productService) =>
+app.MapGet("/getProducts", async (IMediator mediator) =>
 {
-    var products = await productService.GetProductsAsync();
-    return Results.Ok(products);
+    //var request = new GetAllProductRequest();
+    //var repository = new ProductRepository(new mini.Infrastructure.Data.SampleProductsDbContext(
+    //    new DbContextOptionsBuilder<mini.Infrastructure.Data.SampleProductsDbContext>()
+    //        .UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+    //        .Options
+    //));
+    //var handler = new GetAllProductsRequestHandler(repository);
+    //var response = await handler.Handle(request);
+    //return Results.Ok(response);
+
+    var response = await mediator.Send(new GetAllProductRequest());
+    return Results.Ok(response);
+});
+
+app.MapPost("/createProduct", async (CreateNewProductRequest request, IMediator mediator) =>
+{
+    var response = await mediator.Send(request);
+    return Results.Ok(response);
 });
 
 app.Run();
