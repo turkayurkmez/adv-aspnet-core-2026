@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using mini.Application;
 using mini.Application.Contracts;
 using mini.Infrastructure.Repositories;
@@ -10,7 +11,23 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
+
+//SQLite için dbContext'i ekleyelim:
+
+builder.Services.AddDbContext<mini.Infrastructure.Data.SampleProductsDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
 var app = builder.Build();
+
+
+// Ensure the database is created and apply migrations
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<mini.Infrastructure.Data.SampleProductsDbContext>();
+    dbContext.Database.Migrate();
+}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

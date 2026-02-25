@@ -30,31 +30,32 @@ namespace mini.Application
             return product.Id;
         }
 
-        public Task<int> DeleteProduct(int id)
+
+
+        public async Task<Product> GetProductById(int id)
         {
-            throw new NotImplementedException();
+            return await _productRepository.Get(id);
         }
 
-        public Task<Product> GetProductById(int id)
+        public async Task<List<Product>> GetProductsAsync()
         {
-            throw new NotImplementedException();
-        }
+            return await _productRepository.GetAll();
 
-        public Task<List<Product>> GetProductsAsync()
-        {
-            var products = new List<Product>()
-            {
-                new Product { Id=1, Name="Ürün A", Description="Açıklama", Price=1 },
-                 new Product { Id=2, Name="Ürün B", Description="Açıklama", Price=1 },
-            };
-
-            return Task.FromResult(products);
 
         }
 
-        public Task<int> UpdateProduct(Product product)
+
+        public async Task DeleteProduct(int id)
         {
-            throw new NotImplementedException();
+            await _productRepository.Delete(id);
+
+        }
+
+        public async Task UpdateProduct(Product product)
+        {
+            await _productRepository.Update(product);
+
+
         }
     }
 }

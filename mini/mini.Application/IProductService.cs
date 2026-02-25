@@ -9,8 +9,8 @@ namespace mini.Application
     public interface IProductService
     {
         Task<int> CreateNewProduct(CreateNewProductRequest product);
-        Task<int> UpdateProduct(Product product);
-        Task<int> DeleteProduct(int id);
+        Task UpdateProduct(Product product);
+        Task DeleteProduct(int id);
         Task<Product> GetProductById(int id);
 
         Task<List<Product>> GetProductsAsync();

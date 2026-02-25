@@ -1,5 +1,7 @@
-﻿using mini.Application.Contracts;
+﻿using Microsoft.EntityFrameworkCore;
+using mini.Application.Contracts;
 using mini.Domain;
+using mini.Infrastructure.Data;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,38 +11,48 @@ namespace mini.Infrastructure.Repositories
     public class ProductRepository : IProductRepository
     {
 
-        private List<Product> products=new List<Product>();
-        public Task Create(Product entity)
-        {
-            products.Add(entity);
+        private readonly SampleProductsDbContext dbContext;
 
-            return Task.CompletedTask;
-        
+        //constructor injection of the dbContext
+        public ProductRepository(SampleProductsDbContext dbContext)
+        {
+            this.dbContext = dbContext;
         }
 
-        public Task Delete(int id)
+
+        public async Task Create(Product entity)
         {
-            throw new NotImplementedException();
+            await dbContext.Products.AddAsync(entity);
+            await dbContext.SaveChangesAsync();
+
+
         }
 
-        public Task<Product> Get(int id)
+        public async Task Delete(int id)
         {
-            throw new NotImplementedException();
+            await dbContext.Products.Where(p => p.Id == id).ExecuteDeleteAsync();
+
         }
 
-        public Task<List<Product>> GetAll()
+        public async Task<Product> Get(int id)
         {
-            throw new NotImplementedException();
+           return await dbContext.Products.Where(p => p.Id == id).FirstOrDefaultAsync();
         }
 
-        public Task<List<Product>> SearchByName(string name)
+        public async Task<List<Product>> GetAll()
         {
-            throw new NotImplementedException();
+          return await dbContext.Products.ToListAsync();
         }
 
-        public Task Update(Product entity)
+        public async Task<List<Product>> SearchByName(string name)
         {
-            throw new NotImplementedException();
+           return await dbContext.Products.Where(p => p.Name.Contains(name)).ToListAsync();
+        }
+
+        public async Task Update(Product entity)
+        {
+            dbContext.Products.Update(entity);
+            await dbContext.SaveChangesAsync();
         }
     }
 }
