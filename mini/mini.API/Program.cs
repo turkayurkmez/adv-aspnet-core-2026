@@ -1,10 +1,12 @@
 using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using mini.Application;
 using mini.Application.Contracts;
 using mini.Application.DataTransferObjects;
 using mini.Application.Features.Products.Commands.CreateNewProduct;
 using mini.Application.Features.Products.Queries.GetAllProducts;
+using mini.Application.Features.Products.Queries.GetProductById;
 using mini.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,25 +45,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-
 app.MapGet("/getProducts", async (IMediator mediator) =>
 {
     //var request = new GetAllProductRequest();
@@ -71,22 +54,38 @@ app.MapGet("/getProducts", async (IMediator mediator) =>
     //        .Options
     //));
     //var handler = new GetAllProductsRequestHandler(repository);
-    //var response = await handler.Handle(request);
-    //return Results.Ok(response);
+    //var response = await handler.Handle(request);    //return Results.Ok(response);
 
     var response = await mediator.Send(new GetAllProductRequest());
     return Results.Ok(response);
-});
+}).Produces<Ok<GetAllProductResponse>>(200);
+
+
+app.MapGet("/getProduct/{id}", async (int id, IMediator mediator) =>
+{
+    var response = await mediator.Send(new GetProductByIdRequest(id));
+    return (response is null) ? Results.NotFound() : TypedResults.Ok(response);
+}).Produces<Ok<GetProductByIdResponse>>(200)
+  .Produces<NotFound>(404);
+
+
+
+//explicit dönüþ tipli endpoint:
+
+
+
+
+
+
 
 app.MapPost("/createProduct", async (CreateNewProductRequest request, IMediator mediator) =>
 {
     var response = await mediator.Send(request);
-    return Results.Ok(response);
+    return TypedResults.Created($"/getProduct/{response.Id}", response);
 });
+
+
+
 
 app.Run();
 
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

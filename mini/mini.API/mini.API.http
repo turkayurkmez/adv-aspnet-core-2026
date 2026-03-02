@@ -15,7 +15,7 @@ Content-Type: application/json
 
 {
   "name": "Test Product",
-  "description": "This is a test product description",
+  "description": "This is a sample product description",
   "price": 99.99
 }
 
