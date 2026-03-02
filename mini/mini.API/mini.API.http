@@ -1,16 +1,13 @@
-@mini.API_HostAddress = http://localhost:5099
+@mini.API_HostAddress = https://localhost:7005/api/products
 
-GET {{mini.API_HostAddress}}/weatherforecast/
+###
+
+GET {{mini.API_HostAddress}}/getAll
 Accept: application/json
 
 ###
 
-GET {{mini.API_HostAddress}}/getProducts
-Accept: application/json
-
-###
-
-POST {{mini.API_HostAddress}}/createProduct
+POST {{mini.API_HostAddress}}/create
 Content-Type: application/json
 
 {
@@ -20,3 +17,6 @@ Content-Type: application/json
 }
 
 ###
+GET {{mini.API_HostAddress}}/get/1
+Accept: application/json
+
