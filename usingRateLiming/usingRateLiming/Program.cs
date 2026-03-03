@@ -11,7 +11,8 @@ builder.Services.AddRateLimiter(options =>
 {
     options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
     {
-        return RateLimitPartition.GetFixedWindowLimiter<string>(partitionKey: httpContext.Request.Headers["X-Api-Key"].ToString() ?? "unknown", factory: partition =>
+        //partition, IP Adresi, kullanýcý kimliði, "fixed" olabilir.
+        return RateLimitPartition.GetFixedWindowLimiter<string>(partitionKey:"fixed", factory: partition =>
             new FixedWindowRateLimiterOptions
             {
                 PermitLimit = 20,
